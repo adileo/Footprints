@@ -227,8 +227,9 @@ class CaptureAttributionDataMiddleware
      */
     static public function trackVisit($attributionData, $cookieToken)
     {
+        $user = [];
+        $user[config('footprints.column_name')] = Auth::user() ? Auth::user()->id : null; 
         $visit = Visit::create(array_merge([
-            
             'cookie_token'      => $cookieToken,
             'landing_domain'    => $attributionData['landing_domain'],
             'landing_page'      => $attributionData['landing_page'],
@@ -243,7 +244,7 @@ class CaptureAttributionDataMiddleware
             'referral'          => $attributionData['referral'],
             'created_at'        => @$attributionData['created_at'] ?: date('Y-m-d H:i:s'),
             'updated_at'        => @$attributionData['updated_at'] ?: date('Y-m-d H:i:s'),
-        ], $attributionData['custom']));
+        ], $attributionData['custom'], $user));
 
         return $visit->id;
     }
